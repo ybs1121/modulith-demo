@@ -1,7 +1,12 @@
-package com.toy.modulithdemo.product;
+package com.toy.modulithdemo.shared.event;
 
 
-public class ProductUsedEvent {
+import lombok.Data;
+
+import java.io.Serializable;
+
+@Data
+public class ProductUsedEvent implements Serializable {
 
     private final Long productId;
     private final int count;
@@ -11,11 +16,4 @@ public class ProductUsedEvent {
         this.count = count;
     }
 
-    public Long getProductId() {
-        return productId;
-    }
-
-    public int getCount() {
-        return count;
-    }
 }

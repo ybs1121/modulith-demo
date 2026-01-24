@@ -1,7 +1,9 @@
 package com.toy.modulithdemo.order;
 
 
-import com.toy.modulithdemo.product.ProductUsedEvent;
+import com.toy.modulithdemo.order.exception.OrderException;
+import com.toy.modulithdemo.shared.event.OrderCancelEvent;
+import com.toy.modulithdemo.shared.event.ProductUsedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -24,5 +26,18 @@ public class OrderService {
         eventPublisher.publishEvent(new ProductUsedEvent(productId, count));
 
         return saved;
+    }
+
+    public Order cancel(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderException("주문을 찾을 수 없습니다.")
+        );
+
+
+        Order cancelOrder = orderRepository.save(order.cancel());
+
+        eventPublisher.publishEvent(new OrderCancelEvent(cancelOrder.getProductId(), cancelOrder.getCount()));
+        return cancelOrder;
+
     }
 }

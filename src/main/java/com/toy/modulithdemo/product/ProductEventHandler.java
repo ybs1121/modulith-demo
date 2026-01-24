@@ -1,6 +1,7 @@
 package com.toy.modulithdemo.product;
 
 
+import com.toy.modulithdemo.shared.event.ProductUsedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,4 +20,6 @@ public class ProductEventHandler {
     public void on(ProductUsedEvent event) {
         productService.decreaseStock(event.getProductId(), event.getCount());
     }
+
+
 }

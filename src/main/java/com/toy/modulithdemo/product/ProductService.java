@@ -28,4 +28,10 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("product not found"));
         product.decreaseStock(count);
     }
+
+    public void increaseStock(Long productId, int count) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("product not found"));
+        product.increaseStock(count);
+    }
 }
