@@ -16,21 +16,34 @@ public class OrderCancelledEventHandler {
         this.productService = productService;
     }
 
-    // 동기 + 같은 트랜잭션
-    // 이벤트 리스너에서 실패 시 발행자도 롤백
-
+    // 1. 동기 + 같은 트랜잭션
+//    이벤트 리스너에서 실패 시 발행자도 롤백
     @EventListener
     @Transactional
     public void on(OrderCancelEvent event) {
         productService.increaseStock(event.getProductId(), event.getCount());
     }
 
-    // 비동기 + 다른 트랜잭션
-    // 이벤트 리스너에서 실패 시 발행자도 롤백 X
-
-//    @Async  //  비동기
-//    @TransactionalEventListener // 새로운 트랜잭션
+//    // 2. 동기 + 트랜잭션 없음
+////    이벤트 리스너에서 실패 시 발행자는 영향 없음, 원자성 없음
+//    @EventListener
 //    public void on(OrderCancelEvent event) {
 //        productService.increaseStock(event.getProductId(), event.getCount());
 //    }
+//
+//    // 3. 동기 + 다른 트랜잭션 (AFTER_COMMIT)
+////    이벤트 리스너에서 실패 시 발행자는 롤백 X, 원자성 깨짐
+//    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+//    public void on(OrderCancelEvent event) {
+//        productService.increaseStock(event.getProductId(), event.getCount());
+//    }
+//
+//    // 4. 비동기 + 다른 트랜잭션
+////    이벤트 리스너에서 실패 시 발행자는 롤백 X,
+//    @Async
+//    @TransactionalEventListener
+//    public void on(OrderCancelEvent event) {
+//        productService.increaseStock(event.getProductId(), event.getCount());
+//    }
+
 }
