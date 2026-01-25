@@ -1,7 +1,20 @@
 package com.toy.modulithdemo.order.exception;
 
+import com.toy.modulithdemo.order.constant.OrderErrorCode;
+
 public class OrderException extends RuntimeException {
-    public OrderException(String message) {
-        super(message);
+    private final OrderErrorCode errorCode;
+
+    public OrderException(OrderErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
+
+    public String getCode() {
+        return errorCode.getCode();
+    }
+
+    public OrderErrorCode getErrorCode() {
+        return errorCode;
     }
 }

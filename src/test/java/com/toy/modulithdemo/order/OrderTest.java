@@ -3,6 +3,7 @@ package com.toy.modulithdemo.order;
 import com.toy.modulithdemo.order.constant.DeliveryStatus;
 
 
+import com.toy.modulithdemo.order.constant.OrderErrorCode;
 import com.toy.modulithdemo.order.exception.OrderException;
 
 import org.assertj.core.api.Assertions;
@@ -40,7 +41,7 @@ class OrderTest {
         // 2. When & Then: 또 취소하려고 시도하면 예외 발생
         Assertions.assertThatThrownBy(() -> order.cancel())
                 .isInstanceOf(OrderException.class)
-                .hasMessage("주문상태가 결제 완료일 때만 취소할 수 있습니다.");
+                .hasMessage(OrderErrorCode.ALREADY_CANCELLED.getMessage());
     }
 
 
@@ -48,11 +49,14 @@ class OrderTest {
     @DisplayName("배송 중인 상태에서는 취소할 수 없다")
     void cancelOrderFail_Shipping() {
         // 1. Given: 리플렉션으로 강제로 상태를 SHIPPING으로 변경
-        ReflectionTestUtils.setField(order, "deliveryStatus", DeliveryStatus.SHIPPING);
+//        ReflectionTestUtils.setField(order, "deliveryStatus", DeliveryStatus.SHIPPING);
+
+        // Public
+        order.startShipping();
 
         // 2. When & Then
         Assertions.assertThatThrownBy(() -> order.cancel())
                 .isInstanceOf(OrderException.class)
-                .hasMessage("주문상태가 결제 완료일 때만 취소할 수 있습니다.");
+                .hasMessage(OrderErrorCode.NOT_PAID.getMessage());
     }
 }

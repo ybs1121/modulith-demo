@@ -1,6 +1,7 @@
 package com.toy.modulithdemo.order;
 
 
+import com.toy.modulithdemo.order.constant.OrderErrorCode;
 import com.toy.modulithdemo.order.exception.OrderException;
 import com.toy.modulithdemo.shared.event.OrderCancelEvent;
 import com.toy.modulithdemo.shared.event.ProductUsedEvent;
@@ -30,7 +31,7 @@ public class OrderService {
 
     public Order cancel(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new OrderException("주문을 찾을 수 없습니다.")
+                () -> new OrderException(OrderErrorCode.NOT_FOUND)
         );
 
 

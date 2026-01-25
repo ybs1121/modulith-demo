@@ -1,6 +1,7 @@
 package com.toy.modulithdemo.order;
 
 import com.toy.modulithdemo.order.constant.DeliveryStatus;
+import com.toy.modulithdemo.order.constant.OrderErrorCode;
 import com.toy.modulithdemo.order.exception.OrderException;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,13 +32,23 @@ public class Order {
     }
 
 
+
     public Order cancel() {
 
+        if (this.getDeliveryStatus() == DeliveryStatus.CANCELLED) {
+            throw new OrderException(OrderErrorCode.ALREADY_CANCELLED);
+        }
+
         if (this.getDeliveryStatus() != DeliveryStatus.PAYMENT_COMPLETED) {
-            throw new OrderException("주문상태가 결제 완료일 때만 취소할 수 있습니다.");
+            throw new OrderException(OrderErrorCode.NOT_PAID);
         }
 
         changeDeliveryStatus();
+        return this;
+    }
+
+    public Order startShipping() {
+        this.deliveryStatus = DeliveryStatus.SHIPPING;
         return this;
     }
 
