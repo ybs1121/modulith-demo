@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -13,9 +14,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-
-    public Product create(String name, int stock) {
-        return productRepository.save(new Product(name, stock));
+    public Product create(String name, int stock, BigDecimal price) {
+        return productRepository.save(new Product(name, stock, price));
     }
 
     @Transactional(readOnly = true)

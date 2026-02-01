@@ -12,6 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
+
 
 class OrderTest {
 
@@ -20,7 +22,7 @@ class OrderTest {
 
     @BeforeEach
     void init() {
-        order = new Order(1L, 2);
+        order = new Order(1L, 2, BigDecimal.valueOf(20000), BigDecimal.valueOf(20000));
     }
 
     @Test

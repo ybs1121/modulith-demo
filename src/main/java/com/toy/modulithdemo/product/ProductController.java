@@ -2,6 +2,7 @@ package com.toy.modulithdemo.product;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -16,8 +17,9 @@ public class ProductController {
 
     @PostMapping
     public Product create(@RequestParam String name,
-                          @RequestParam int stock) {
-        return productService.create(name, stock);
+                          @RequestParam int stock,
+                          @RequestParam BigDecimal price) {
+        return productService.create(name, stock, price);
     }
 
     @GetMapping

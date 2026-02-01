@@ -14,7 +14,8 @@ public class OrderController {
 
     @PostMapping
     public Order create(@RequestParam Long productId,
-                        @RequestParam int count) {
-        return orderService.create(productId, count);
+                        @RequestParam int count,
+                        @RequestParam Long couponId) {
+        return orderService.create(productId, count, couponId);
     }
 }

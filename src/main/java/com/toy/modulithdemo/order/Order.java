@@ -6,6 +6,8 @@ import com.toy.modulithdemo.order.exception.OrderException;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Entity
 @Table(name = "orders") // order가 예약어일 수 있어 테이블명은 orders로
@@ -21,16 +23,21 @@ public class Order {
 
     private DeliveryStatus deliveryStatus;
 
+    private BigDecimal originalPrice;
+
+    private BigDecimal discountPrice;
+
 
     protected Order() {
     }
 
-    public Order(Long productId, int count) {
+    public Order(Long productId, int count, BigDecimal originalPrice, BigDecimal discountPrice) {
         this.productId = productId;
         this.count = count;
         this.deliveryStatus = DeliveryStatus.PAYMENT_COMPLETED;
+        this.originalPrice = originalPrice;
+        this.discountPrice = discountPrice;
     }
-
 
 
     public Order cancel() {
@@ -47,9 +54,8 @@ public class Order {
         return this;
     }
 
-    public Order startShipping() {
+    public void startShipping() {
         this.deliveryStatus = DeliveryStatus.SHIPPING;
-        return this;
     }
 
 

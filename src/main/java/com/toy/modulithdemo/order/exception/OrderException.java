@@ -1,7 +1,9 @@
 package com.toy.modulithdemo.order.exception;
 
 import com.toy.modulithdemo.order.constant.OrderErrorCode;
+import lombok.Getter;
 
+@Getter
 public class OrderException extends RuntimeException {
     private final OrderErrorCode errorCode;
 
@@ -14,7 +16,4 @@ public class OrderException extends RuntimeException {
         return errorCode.getCode();
     }
 
-    public OrderErrorCode getErrorCode() {
-        return errorCode;
-    }
 }

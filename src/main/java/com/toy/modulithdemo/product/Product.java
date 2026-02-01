@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Entity
 public class Product {
@@ -19,10 +21,12 @@ public class Product {
 
     private int stock; // 재고 수량
 
+    private BigDecimal price;
+
     protected Product() {
     }
 
-    public Product(String name, int stock) {
+    public Product(String name, int stock, BigDecimal price) {
         this.name = name;
         this.stock = stock;
     }
