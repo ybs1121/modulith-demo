@@ -5,9 +5,11 @@ import com.toy.modulithdemo.order.constant.OrderErrorCode;
 import com.toy.modulithdemo.order.exception.OrderException;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
+@ToString
 @Getter
 @Entity
 @Table(name = "orders") // order가 예약어일 수 있어 테이블명은 orders로
@@ -60,6 +62,10 @@ public class Order {
 
 
     private void changeDeliveryStatus() {
+        this.deliveryStatus = DeliveryStatus.CANCELLED;
+    }
+
+    public void changeDeliveryStatus(DeliveryStatus deliveryStatus) {
         this.deliveryStatus = DeliveryStatus.CANCELLED;
     }
 

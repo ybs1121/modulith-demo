@@ -1,5 +1,7 @@
 package com.toy.modulithdemo.order.constant;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -21,6 +23,7 @@ public enum DeliveryStatus {
 
     ;
 
+    @JsonValue
     private final String code;
     private final String description;
 
@@ -30,6 +33,7 @@ public enum DeliveryStatus {
     }
 
     // 코드로 Enum 찾기 (JPA Converter 등에서 사용)
+    @JsonCreator
     public static DeliveryStatus ofCode(String code) {
         return Arrays.stream(DeliveryStatus.values())
                 .filter(v -> v.getCode().equals(code))
