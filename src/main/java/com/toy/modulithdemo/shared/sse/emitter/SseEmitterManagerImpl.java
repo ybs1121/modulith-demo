@@ -68,8 +68,10 @@ public class SseEmitterManagerImpl implements SseEmitterManager {
             } catch (IOException e) {
                 log.error("Emitter 전송 실패", e);
                 emitterList.remove(emitter);
+                if (emitterList.isEmpty()) {
+                    emitters.remove(event.getUserKey()); // 리스트가 비면 키 삭제
+                }
             }
         });
-
     }
 }

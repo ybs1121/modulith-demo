@@ -22,7 +22,7 @@ class OrderTest {
 
     @BeforeEach
     void init() {
-        order = new Order(1L, 2, BigDecimal.valueOf(20000), BigDecimal.valueOf(20000));
+        order = new Order(1L, 2, BigDecimal.valueOf(20000), BigDecimal.valueOf(20000), 1L);
     }
 
     @Test

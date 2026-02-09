@@ -5,6 +5,7 @@ import com.toy.modulithdemo.order.constant.OrderErrorCode;
 import com.toy.modulithdemo.order.exception.OrderException;
 import com.toy.modulithdemo.order.port.CouponPort;
 import com.toy.modulithdemo.order.port.ProductPort;
+import com.toy.modulithdemo.order.port.UserPort;
 import com.toy.modulithdemo.shared.event.OrderCancelEvent;
 import com.toy.modulithdemo.shared.event.ProductUsedEvent;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +25,17 @@ public class OrderService {
 
     private final CouponPort couponPort;
     private final ProductPort productPort;
+    private final UserPort userPort;
 
-    public Order create(Long productId, int count, Long couponId) {
+    public Order create(Long productId, int count, Long couponId, Long userKey) {
+
+        userPort.isValidUserKey(userKey);
 
         BigDecimal originalPrice = productPort.getProductPrice(productId);
 
         BigDecimal discountPrice = couponPort.calculateDiscountPrice(couponId, originalPrice);
 
-        Order order = new Order(productId, count, originalPrice, discountPrice);
+        Order order = new Order(productId, count, originalPrice, discountPrice, userKey);
         Order saved = orderRepository.save(order);
 
         // 주문이 생성되면 이벤트 발행

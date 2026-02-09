@@ -29,16 +29,19 @@ public class Order {
 
     private BigDecimal discountPrice;
 
+    private Long userKey;
+
 
     protected Order() {
     }
 
-    public Order(Long productId, int count, BigDecimal originalPrice, BigDecimal discountPrice) {
+    public Order(Long productId, int count, BigDecimal originalPrice, BigDecimal discountPrice, Long userKey) {
         this.productId = productId;
         this.count = count;
         this.deliveryStatus = DeliveryStatus.PAYMENT_COMPLETED;
         this.originalPrice = originalPrice;
         this.discountPrice = discountPrice;
+        this.userKey = userKey;
     }
 
 
