@@ -2,12 +2,16 @@ package com.toy.modulithdemo.video;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value; // 필요 없어질 수도 있음
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -53,5 +57,25 @@ public class VideoService {
         );
 
         return videoRepository.save(video).getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Video> getVideosByProductId(Long productId) {
+        return videoRepository.findByProductId(productId);
+    }
+
+
+    public Resource loadVideoAsResource(String filename) throws MalformedURLException {
+        // 프로젝트 루트 경로 (업로드 때와 동일한 로직 사용)
+        String projectPath = System.getProperty("user.dir");
+        String uploadPath = projectPath + File.separator + "uploads";
+
+        File file = new File(uploadPath, filename);
+
+        if (!file.exists()) {
+            throw new RuntimeException("파일을 찾을 수 없습니다: " + filename);
+        }
+
+        return new UrlResource(file.toURI());
     }
 }

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>동영상 업로드 및 재생</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .upload-section { border: 2px dashed #ccc; padding: 20px; text-align: center; margin-bottom: 30px; }
+    .video-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .video-item { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+    video { width: 100%; border-radius: 4px; }
+    h3 { margin-top: 0; }
+  </style>
+</head>
+<body>
+
+<h1>상품 ID: <span th:text="${productId}">1</span> 동영상 관리</h1>
+
+<!-- 1. 업로드 섹션 -->
+<div class="upload-section">
+  <h3>새 동영상 업로드</h3>
+  <input type="file" id="videoFile" accept="video/*">
+  <button onclick="uploadVideo()">업로드 하기</button>
+  <p id="status" style="color: blue;"></p>
+</div>
+
+<hr>
+
+<!-- 2. 재생 목록 섹션 -->
+<h2>업로드된 동영상 목록</h2>
+<div id="videoContainer" class="video-list">
+  <!-- 자바스크립트로 비디오들이 여기에 로드됩니다 -->
+</div>
+
+<script th:inline="javascript">
+  const productId = [[${productId}]];
+
+  // 페이지 로드 시 목록 가져오기
+  window.onload = loadVideos;
+
+  function loadVideos() {
+    fetch(`/video/${productId}/videos`)
+            .then(res => res.json())
+            .then(videos => {
+              const container = document.getElementById('videoContainer');
+              container.innerHTML = ''; // 초기화
+
+              if (videos.length === 0) {
+                container.innerHTML = '<p>등록된 동영상이 없습니다.</p>';
+                return;
+              }
+
+              videos.forEach(video => {
+                const html = `
+                            <div class="video-item">
+                                <h3>${video.originalFilename}</h3>
+                                <video controls preload="metadata">
+                                    <source src="/video/videos/stream/${video.storedFilename}" type="video/mp4">
+                                    브라우저가 동영상을 지원하지 않습니다.
+                                </video>
+                                <p>Size: ${(video.fileSize / 1024 / 1024).toFixed(2)} MB</p>
+                            </div>
+                        `;
+                container.innerHTML += html;
+              });
+            });
+  }
+
+  function uploadVideo() {
+    const fileInput = document.getElementById('videoFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert("파일을 선택해주세요!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const status = document.getElementById('status');
+    status.textContent = "업로드 중...";
+
+    fetch(`/video/${productId}/videos`, {
+      method: 'POST',
+      body: formData
+    })
+            .then(res => {
+              if (res.ok) {
+                status.textContent = "업로드 성공!";
+                fileInput.value = ''; // 파일 선택 초기화
+                loadVideos(); // 목록 갱신
+              } else {
+                status.textContent = "업로드 실패";
+                res.text().then(msg => alert(msg));
+              }
+            })
+            .catch(err => {
+              console.error(err);
+              status.textContent = "에러 발생!";
+            });
+  }
+</script>
+</body>
+</html>
