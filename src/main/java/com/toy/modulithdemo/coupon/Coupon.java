@@ -22,6 +22,9 @@ public class Coupon {
     @Column(nullable = false)
     private Long userKey;
 
+    @Column(nullable = false)
+    private Long promotionId;
+
 
     //    AMOUNT("AMOUNT", "금액 할인"),
     //    RATE("RATE","할인률")
@@ -34,7 +37,7 @@ public class Coupon {
     private BigDecimal maxDiscountAmount;// 최대 할인 금액 (Null 이면 할인 제안 없다)
 
 
-    public Coupon(Long userKey, CouponType couponType, BigDecimal discountValue,
+    public Coupon(Long userKey, Long promotionId, CouponType couponType, BigDecimal discountValue,
                   BigDecimal minimumApplyAmount, BigDecimal maxDiscountAmount) {
         if (discountValue == null || discountValue.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("할인값은 양수여야 함");
@@ -44,6 +47,7 @@ public class Coupon {
         }
 
         this.userKey = userKey;
+        this.promotionId = promotionId;
         this.couponType = couponType;
         this.discountValue = discountValue;
         this.minimumApplyAmount = minimumApplyAmount;

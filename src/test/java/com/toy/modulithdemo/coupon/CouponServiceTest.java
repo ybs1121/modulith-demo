@@ -1,6 +1,10 @@
 package com.toy.modulithdemo.coupon;
 
 
+import com.toy.modulithdemo.promotion.Promotion;
+import com.toy.modulithdemo.promotion.PromotionRepository;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,10 +19,19 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class CouponServiceTest {
 
     @Autowired
-    private NotCompleteWorkingCouponServiceImpl couponService;
+    private CouponService couponService;
 
     @Autowired
     private CouponRepository couponRepository;
+
+    @Autowired
+    private PromotionRepository promotionRepository;
+
+
+    @BeforeEach
+    void init() {
+        promotionRepository.save(Promotion.create("테스트", 100L, 100L));
+    }
 
 
     @Test
@@ -28,32 +41,33 @@ class CouponServiceTest {
         int threadCount = 1000; // 1000명의 유저가 동시에 요청
 
         // 멀티스레드 환경을 구성
-        ExecutorService executorService = Executors.newFixedThreadPool(32);
+        try (ExecutorService executorService = Executors.newFixedThreadPool(32)) {
+            // 1000개의 요청이 모두 끝날 때까지 메인 스레드를 대기시키기 위한 장치
+            CountDownLatch latch = new CountDownLatch(threadCount);
 
-        // 1000개의 요청이 모두 끝날 때까지 메인 스레드를 대기시키기 위한 장치
-        CountDownLatch latch = new CountDownLatch(threadCount);
+            // when
+            for (int i = 0; i < threadCount; i++) {
+                long userId = i;
+                executorService.submit(() -> {
+                    try {
+                        couponService.issueFcfsCoupon(userId, 1L);
+                    } catch (Exception e) {
+                        // 수량 소진 Exception 등 발생 시 무시
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
 
-        // when
-        for (int i = 0; i < threadCount; i++) {
-            long userId = i;
-            executorService.submit(() -> {
-                try {
-                    couponService.issueFcfsCoupon(userId, 1L);
-                } catch (Exception e) {
-                    // 수량 소진 Exception 등 발생 시 무시
-                } finally {
-                    latch.countDown();
-                }
-            });
+            // 모든 스레드의 작업이 끝날 때까지 대기
+            latch.await();
+
+
         }
-
-        // 모든 스레드의 작업이 끝날 때까지 대기
-        latch.await();
 
         // then
         long count = couponRepository.count();
         System.out.println("실제 발급된 쿠폰 개수: " + count);
-
         // 100개만 발급되기를 기대하지만 테스트는 실패
         assertThat(count).isEqualTo(100);
 

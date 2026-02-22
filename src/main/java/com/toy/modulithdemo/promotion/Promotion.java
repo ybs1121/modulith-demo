@@ -1,5 +1,7 @@
 package com.toy.modulithdemo.promotion;
 
+import com.toy.modulithdemo.promotion.constant.PromotionErrorCode;
+import com.toy.modulithdemo.promotion.exception.PromotionException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -23,7 +25,7 @@ public class Promotion {
     // 재고 차감 비즈니스 로직
     public void decrease() {
         if (this.remainQuantity <= 0) {
-            throw new IllegalArgumentException("쿠폰이 모두 소진되었습니다.");
+            throw new PromotionException(PromotionErrorCode.ALL_USED_UP);
         }
         this.remainQuantity--;
     }

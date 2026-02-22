@@ -30,7 +30,7 @@ public class NotCompleteWorkingCouponServiceImpl implements CouponService {
             return -1L;
         }
 
-        Coupon coupon = new Coupon(1L, CouponType.RATE, BigDecimal.valueOf(10),
+        Coupon coupon = new Coupon(1L, 1L, CouponType.RATE, BigDecimal.valueOf(10),
                 BigDecimal.ZERO, BigDecimal.valueOf(100_000L));
 
         Coupon saveCoupon = couponRepository.save(coupon);

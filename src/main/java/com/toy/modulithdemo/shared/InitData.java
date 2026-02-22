@@ -4,6 +4,8 @@ import com.toy.modulithdemo.order.Order;
 import com.toy.modulithdemo.order.OrderRepository;
 import com.toy.modulithdemo.product.Product;
 import com.toy.modulithdemo.product.ProductRepository;
+import com.toy.modulithdemo.promotion.Promotion;
+import com.toy.modulithdemo.promotion.PromotionRepository;
 import com.toy.modulithdemo.user.User;
 import com.toy.modulithdemo.user.UserRepository;
 import jakarta.annotation.PostConstruct;
@@ -21,6 +23,7 @@ public class InitData {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final PromotionRepository promotionRepository;
 
 
     @PostConstruct
@@ -35,6 +38,8 @@ public class InitData {
         log.info("Save Order : {}", order);
 
         userRepository.save(User.create("test123", "qwer1234"));
+
+        promotionRepository.save(Promotion.create("테스트", 100L, 100L));
 
 
     }
