@@ -5,6 +5,7 @@ import com.toy.modulithdemo.promotion.exception.PromotionException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,10 @@ public class Promotion {
     private Long totalQuantity;    // 총 수량
     private Long remainQuantity;   // 잔여 수량
 
+    // 낙관적 락을 위한 버전 필드 추가
+    @Version
+    private Long version;
+
     // 재고 차감 비즈니스 로직
     public void decrease() {
         if (this.remainQuantity <= 0) {
@@ -31,6 +36,6 @@ public class Promotion {
     }
 
     public static Promotion create(String name, Long totalQuantity, Long remainQuantity) {
-        return new Promotion(null, name, totalQuantity, remainQuantity);
+        return new Promotion(null, name, totalQuantity, remainQuantity, null);
     }
 }

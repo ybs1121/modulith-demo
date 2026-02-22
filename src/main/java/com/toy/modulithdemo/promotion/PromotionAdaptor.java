@@ -16,7 +16,10 @@ public class PromotionAdaptor implements PromotionPort {
 
     @Override
     public void decreasePromotionRemainQuantity(Long promotionId) {
-        Promotion promotion = promotionRepository.findById(promotionId).orElseThrow(() -> new PromotionException(PromotionErrorCode.NOT_FOUND));
+//        Promotion promotion = promotionRepository.findById(promotionId).orElseThrow(() -> new PromotionException(PromotionErrorCode.NOT_FOUND));
+//        Promotion promotion = promotionRepository.findByIdWithPessimisticLock(promotionId).orElseThrow(() -> new PromotionException(PromotionErrorCode.NOT_FOUND)); // 비관적 락
+        Promotion promotion = promotionRepository.findByIdWithOptimisticLock(promotionId).orElseThrow(() -> new PromotionException(PromotionErrorCode.NOT_FOUND)); // 낙관적 락
+
         promotion.decrease();
     }
 }
