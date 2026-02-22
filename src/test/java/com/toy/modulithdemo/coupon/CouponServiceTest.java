@@ -15,7 +15,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class CouponServiceTest {
 
     @Autowired
-    private CouponService couponService;
+    private NotCompleteWorkingCouponServiceImpl couponService;
 
     @Autowired
     private CouponRepository couponRepository;

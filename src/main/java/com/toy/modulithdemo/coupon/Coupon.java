@@ -19,6 +19,9 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long userKey;
+
 
     //    AMOUNT("AMOUNT", "금액 할인"),
     //    RATE("RATE","할인률")
@@ -31,7 +34,7 @@ public class Coupon {
     private BigDecimal maxDiscountAmount;// 최대 할인 금액 (Null 이면 할인 제안 없다)
 
 
-    public Coupon(CouponType couponType, BigDecimal discountValue,
+    public Coupon(Long userKey, CouponType couponType, BigDecimal discountValue,
                   BigDecimal minimumApplyAmount, BigDecimal maxDiscountAmount) {
         if (discountValue == null || discountValue.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("할인값은 양수여야 함");
@@ -40,6 +43,7 @@ public class Coupon {
             throw new IllegalArgumentException("최소 금액은 0 이상이어야 함");
         }
 
+        this.userKey = userKey;
         this.couponType = couponType;
         this.discountValue = discountValue;
         this.minimumApplyAmount = minimumApplyAmount;
