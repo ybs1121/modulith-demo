@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +17,7 @@ public class PromotionLockFacade {
     private final RedissonClient redissonClient;
     private final PromotionPort promotionPort; // 위에서 만든 실제 비즈니스 서비스
 
+    @Transactional
     public void decreaseWithLock(Long promotionId) {
         // 1. 락 이름(Key) 설정 - 프로모션 ID별로 고유한 락을 생성하여 병목 현상 최소화
         String lockKey = "lock:promotion:" + promotionId;
