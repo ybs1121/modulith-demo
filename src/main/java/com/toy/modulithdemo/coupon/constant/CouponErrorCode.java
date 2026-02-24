@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum CouponErrorCode {
     NOT_FOUND("COU00001", "쿠폰을 찾을 수 없습니다."),
+    NOT_SUPPORT("COU00002", "지원하지 않는 서비스 입니다.")
 
 
     ;

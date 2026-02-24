@@ -1,6 +1,8 @@
 package com.toy.modulithdemo.coupon;
 
+import com.toy.modulithdemo.coupon.constant.CouponErrorCode;
 import com.toy.modulithdemo.coupon.constant.CouponType;
+import com.toy.modulithdemo.coupon.exception.CouponException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,11 @@ public class NotCompleteWorkingCouponServiceImpl implements CouponService {
         Promotion.reducePromotionTargetRemainCount(promotionId);
 
         return saveCoupon.getId();
+    }
+
+    @Override
+    public String issueFcfsCouponByRedis(Long userKey, Long promotionId) {
+        throw new CouponException(CouponErrorCode.NOT_SUPPORT);
     }
 
 

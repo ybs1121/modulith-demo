@@ -11,6 +11,7 @@ import com.toy.modulithdemo.user.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ public class InitData {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final PromotionRepository promotionRepository;
+    private final StringRedisTemplate stringRedisTemplate;
 
 
     @PostConstruct
@@ -39,8 +41,17 @@ public class InitData {
 
         userRepository.save(User.create("test123", "qwer1234"));
 
-        promotionRepository.save(Promotion.create("테스트", 100L, 100L));
+        Promotion promotion = promotionRepository.save(Promotion.create("테스트", 100L, 100L));
+
+        setInitialStock(promotion.getId(), promotion.getRemainQuantity());
 
 
     }
+
+    public void setInitialStock(Long promotionId, long amount) {
+        stringRedisTemplate.opsForValue().set("promotion:stock:" + promotionId, String.valueOf(amount));
+        stringRedisTemplate.delete("promotion:users:" + promotionId); // 기존 유저 초기화
+        stringRedisTemplate.delete("promotion:queue"); // 기존 큐 초기화
+    }
+
 }

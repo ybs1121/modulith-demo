@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PromotionAdaptor implements PromotionPort {
 
     private final PromotionRepository promotionRepository;
+    private final PromotionRedisRepository promotionRedisRepository;
 
     @Override
     public void decreasePromotionRemainQuantity(Long promotionId) {
@@ -21,5 +22,10 @@ public class PromotionAdaptor implements PromotionPort {
         Promotion promotion = promotionRepository.findByIdWithOptimisticLock(promotionId).orElseThrow(() -> new PromotionException(PromotionErrorCode.NOT_FOUND)); // 낙관적 락
 
         promotion.decrease();
+    }
+
+    @Override
+    public String decreasePromotionRemainQuantityByRedis(Long promotionId, Long userKey) {
+        return promotionRedisRepository.issue(promotionId, userKey);
     }
 }
