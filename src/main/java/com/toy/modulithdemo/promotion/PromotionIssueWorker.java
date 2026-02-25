@@ -1,5 +1,6 @@
 package com.toy.modulithdemo.promotion;
 
+import com.toy.modulithdemo.coupon.CouponService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -7,9 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -19,6 +18,8 @@ public class PromotionIssueWorker {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final PromotionRepository promotionRepository;
+    private final CouponService couponService;
+
 
     @Transactional
     @Scheduled(fixedDelay = 1000)
@@ -34,17 +35,32 @@ public class PromotionIssueWorker {
             return; // 처리할 데이터가 없으면 그냥 종료
         }
 
-        // 2. promotionId 별로 count를 집계합니다
-        // {"1" -> 37, "2" -> 12} 형태로 그룹화
-        Map<Long, Long> countByPromotion = values.stream()
-                .map(v -> Long.parseLong(v.split(":")[0]))
-                .collect(Collectors.groupingBy(id -> id, Collectors.counting()));
+        // values = ["1:100", "1:101", "2:200", "1:102", "3:300"] (예시 데이터)
+
+        Map<Long, List<Long>> userIdsByPromotion = values.stream()
+                // 1. "promotionId:userId" 문자열을 분리하여 Map.Entry 객체로 변환
+                .map(v -> {
+                    String[] parts = v.split(":");
+                    return new AbstractMap.SimpleEntry<>(
+                            Long.parseLong(parts[0]), // Key: promotionId
+                            Long.parseLong(parts[1])  // Value: userId
+                    );
+                })
+                // 2. promotionId를 기준으로 그룹화하고, 값(userId)들을 List로 모음
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())
+                ));
+
 
         // 3. promotionId 별로 DB 수량을 한 번에 감소
-        countByPromotion.forEach((promotionId, count) -> {
+        userIdsByPromotion.forEach((promotionId, userKeys) -> {
             try {
-                decreaseInBatch(promotionId, count);
-                log.info("Promotion {} - {}건 DB 저장 완료", promotionId, count);
+                decreaseInBatch(promotionId, (long) userKeys.size());
+                couponService.issueAllCoupon(new HashSet<>(userKeys), promotionId);
+
+
+                log.info("Promotion {} - {}건 DB 저장 완료", promotionId, (long) userKeys.size());
             } catch (Exception e) {
                 log.error("Promotion {} DB 저장 실패: {}", promotionId, e.getMessage());
                 // 실패 시 다시 큐에 밀어 넣기 (재처리)

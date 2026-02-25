@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(properties = {"app.scheduling.enable=false"}) // 스케줄러 완전 OFF
-
 class CouponServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(CouponServiceTest.class);
@@ -183,5 +182,45 @@ class CouponServiceTest {
             Long queueSize = stringRedisTemplate.opsForList().size("promotion:queue");
             assertThat(queueSize).isEqualTo(100L);
         }
+    }
+
+    @Test
+    @DisplayName("1000명의 유저가 동시에 대기열 진입을 시도한다")
+    void concurrentJoinQueueTest() throws InterruptedException {
+        // given
+        Long promotionId = promotion.getId();
+        int threadCount = 1000;
+
+        // 멀티 스레드 환경 구성
+        CountDownLatch latch;
+        try (ExecutorService executorService = Executors.newFixedThreadPool(32)) {
+            // 모든 스레드가 동시에 출발하도록 제어하는 Latch
+            latch = new CountDownLatch(threadCount);
+
+            // Redis 대기열 초기화
+            stringRedisTemplate.delete("promotion:waiting:" + promotionId);
+
+            // when
+            for (int i = 0; i < threadCount; i++) {
+                final Long userId = (long) i;
+                executorService.submit(() -> {
+                    try {
+                        // API 호출과 동일한 동작
+                        couponService.registerQueue(userId, promotionId);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+        }
+
+        latch.await(); // 1000개 요청이 끝날 때까지 대기
+
+        // then
+        Long waitingCount = stringRedisTemplate.opsForZSet().zCard("promotion:waiting:" + promotionId);
+        System.out.println("현재 대기열 인원: " + waitingCount);
+
+        // 1000명이 유실 없이 모두 큐에 들어갔는지 검증
+        assertThat(waitingCount).isEqualTo(1000);
     }
 }

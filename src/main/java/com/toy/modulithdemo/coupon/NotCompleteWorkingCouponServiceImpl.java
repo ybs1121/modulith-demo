@@ -3,6 +3,7 @@ package com.toy.modulithdemo.coupon;
 import com.toy.modulithdemo.coupon.constant.CouponErrorCode;
 import com.toy.modulithdemo.coupon.constant.CouponType;
 import com.toy.modulithdemo.coupon.exception.CouponException;
+import com.toy.modulithdemo.shared.QueueStatusResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 
 @Service
@@ -45,6 +47,26 @@ public class NotCompleteWorkingCouponServiceImpl implements CouponService {
 
     @Override
     public String issueFcfsCouponByRedis(Long userKey, Long promotionId) {
+        throw new CouponException(CouponErrorCode.NOT_SUPPORT);
+    }
+
+    @Override
+    public void registerQueue(Long userKey, Long promotionId) {
+        throw new CouponException(CouponErrorCode.NOT_SUPPORT);
+    }
+
+    @Override
+    public QueueStatusResponse getStatus(Long userKey, Long promotionId) {
+        throw new CouponException(CouponErrorCode.NOT_SUPPORT);
+    }
+
+    @Override
+    public Long issueCoupon(Long userKey, Long promotionId) {
+        throw new CouponException(CouponErrorCode.NOT_SUPPORT);
+    }
+
+    @Override
+    public Long issueAllCoupon(Set<Long> userKey, Long promotionId) {
         throw new CouponException(CouponErrorCode.NOT_SUPPORT);
     }
 

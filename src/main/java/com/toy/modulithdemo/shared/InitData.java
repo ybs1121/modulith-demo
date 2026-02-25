@@ -41,7 +41,7 @@ public class InitData {
 
         userRepository.save(User.create("test123", "qwer1234"));
 
-        Promotion promotion = promotionRepository.save(Promotion.create("테스트", 100L, 100L));
+        Promotion promotion = promotionRepository.save(Promotion.create("테스트", 10000L, 10000L));
 
         setInitialStock(promotion.getId(), promotion.getRemainQuantity());
 
